@@ -5,7 +5,7 @@ import { getSheenName } from './enums/Sheen';
 import { getSpellName } from './enums/Spell';
 import { getPartName } from './enums/Part';
 
-type ParsedSKUItem = SKUAttributes & { 
+type ParsedSKUItem = SKUAttributes & {
     paint?: string;
     parts?: string[];
     spells?: string[];
@@ -15,10 +15,14 @@ type ParsedSKUItem = SKUAttributes & {
 }
 
 export function parseSKU(sku: string): ParsedSKUItem {
-    
+
+    // Remove componets known to cause issues with tf2-item-format
+    const unsupportedComponets = ["untradable"];
+    const sanitisedSKU = sku.split(";").filter(n => !unsupportedComponets.includes(n)).join(";");
+
     // Parse for base item
-    let baseItem = _parseBaseSKU(sku);
-    let finalItem: ParsedSKUItem = { ...baseItem, tradable: true};
+    let baseItem = _parseBaseSKU(sanitisedSKU);
+    let finalItem: ParsedSKUItem = { ...baseItem, tradable: true };
 
     // Parse any modifications
     let skuComponents = sku.split(";");
